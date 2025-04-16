@@ -15,7 +15,12 @@ import { createRoomSchema } from "@/lib/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import ClerkInstant from "@/components/clerk-instant";
+import { createRoom } from "@/lib/instant";
+import { useRouter } from "next/navigation";
+
 export default function Page() {
+  const router = useRouter();
   const form = useForm<z.infer<typeof createRoomSchema>>({
     resolver: zodResolver(createRoomSchema),
     defaultValues: {
@@ -46,11 +51,15 @@ export default function Page() {
     name: "tiers",
   });
 
-  const onSubmit = (data: z.infer<typeof createRoomSchema>) => {
-    console.log(data);
+  const onSubmit = async (data: z.infer<typeof createRoomSchema>) => {
+    // TODO: Make sure room name is unique
+    const roomId = await createRoom(data);
+    console.log(roomId);
+    await router.push(`/tier-list/${roomId}`);
   };
 
   return (
+    // <ClerkInstant>
     <div className="w-full pt-10">
       <div className="w-full md:w-3/4 mx-4 md:mx-auto">
         <h1 className="text-center w-full leading-16 text-2xl font-bold">
@@ -187,5 +196,6 @@ export default function Page() {
         </div>
       </div>
     </div>
+    // </ClerkInstant>
   );
 }

@@ -1,0 +1,21 @@
+{
+  "name": "server",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "partykit dev --live",
+    "deploy": "partykit deploy"
+  },
+  "dependencies": {
+    "@types/route-parser": "^0.1.7",
+    "hono": "^4.7.7",
+    "hono-party": "^0.0.7",
+    "partysocket": "^1.0.2",
+    "route-parser": "^0.0.5",
+    "shared": "workspace:*"
+  },
+  "devDependencies": {
+    "partykit": "^0.0.110",
+    "typescript": "^5.5.4"
+  }
+}
