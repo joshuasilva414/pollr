@@ -2,55 +2,18 @@
 
 import { createRoomSchema } from "@/lib/zod";
 import Image from "next/image";
-// import { useParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import { z } from "zod";
 import { useState } from "react";
 import db from "@/lib/instant";
-// Define tier names type
-type TierName = "S" | "A" | "B" | "C" | "D" | "unassigned";
 
 export default function Page() {
   const { roomId } = useParams();
-  // const tiers: z.infer<typeof createRoomSchema>["tiers"] = [
-  //   { name: "S", color: "#ff7f7f" },
-  //   { name: "A", color: "#ffbf7f" },
-  //   { name: "B", color: "#ffdf7f" },
-  //   { name: "C", color: "#ffff7f" },
-  //   { name: "D", color: "#bfff7f" },
-  // ];
-  // const items: z.infer<typeof createRoomSchema>["items"] = [
-  //   {
-  //     name: "Item 1",
-  //     image: "https://loremflickr.com/640/480",
-  //   },
-  //   { name: "Item 2", image: "https://loremflickr.com/640/480" },
-  //   { name: "Item 3", image: "https://loremflickr.com/640/480" },
-  //   { name: "Item 4", image: "https://loremflickr.com/640/480" },
-  //   { name: "Item 5", image: "https://loremflickr.com/640/480" },
-  //   { name: "Item 6", image: "https://loremflickr.com/640/480" },
-  //   { name: "Item 7", image: "https://loremflickr.com/640/480" },
-  //   { name: "Item 8", image: "https://loremflickr.com/640/480" },
-  // ];
 
-  // State to track items in each tier
-  // const [tierItems, setTierItems] = useState<Record<TierName, string[]>>({
-  //   S: [],
-  //   A: [],
-  //   B: [],
-  //   C: [],
-  //   D: [],
-  //   unassigned: items.map((item) => item.name),
-  // });
-
-  const { isLoading, error, data } = await db.useQuery({
-    $rooms: {
-      rankings: {
-        $: {
-          where: {
-            user: {},
-          },
-        },
-      },
+  const { isLoading, error, data } = db.useQuery({
+    rooms: {
+      $rankings: {},
+      $users: {},
       $: {
         where: {
           id: roomId,
@@ -58,9 +21,23 @@ export default function Page() {
       },
     },
   });
+  const tiers = data?.rooms?.[0]?.tiers;
+  const items = data?.rooms?.[0]?.items;
 
-  console.log(data);
+  // State to track items in each tier
+  const [tierItems, setTierItems] = useState<Record<TierName, string[]>>({
+    ...tiers?.reduce(
+      (acc, tier) => {
+        acc[tier.name as TierName] = [];
+        return acc;
+      },
+      {} as Record<TierName, string[]>
+    ),
+    unassigned: items?.map((item) => item.name) || [],
+  });
 
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
   // Function to handle item drop into a tier
   const handleDrop = (e: React.DragEvent, tierName: TierName) => {
     e.preventDefault();
@@ -105,7 +82,7 @@ export default function Page() {
           Tier List
         </h1>
         <div className="flex flex-col">
-          {tiers.map((tier) => (
+          {tiers?.map((tier) => (
             <div
               key={tier.name}
               className="grid grid-cols-8 border border-foreground"
@@ -123,7 +100,7 @@ export default function Page() {
                   e.preventDefault();
                 }}
               >
-                {tierItems[tier.name as TierName].map((itemName) => {
+                {tierItems[tier.name as TierName]?.map((itemName) => {
                   const item = getItemByName(itemName);
                   if (!item) return null;
 

@@ -18,7 +18,10 @@ const _schema = i.schema({
       tiers: i.json(),
       items: i.json(),
     }),
-    ranking: i.entity({}),
+    ranking: i.entity({
+      ranked: i.json(),
+      unranked: i.json(),
+    }),
   },
   links: {
     userRoom: {
