@@ -11,14 +11,15 @@ const _schema = i.schema({
     $users: i.entity({
       email: i.string().unique().indexed(),
     }),
-    $rooms: i.entity({
+    rooms: i.entity({
       code: i.string().unique().indexed(),
       name: i.string(),
       description: i.json(),
       tiers: i.json(),
       items: i.json(),
+      rankings: i.json(),
     }),
-    ranking: i.entity({
+    rankings: i.entity({
       ranked: i.json(),
       unranked: i.json(),
     }),
@@ -31,19 +32,19 @@ const _schema = i.schema({
         label: "rooms",
       },
       reverse: {
-        on: "$rooms",
+        on: "rooms",
         has: "many",
         label: "users",
       },
     },
     roomRanking: {
       forward: {
-        on: "$rooms",
+        on: "rooms",
         has: "many",
         label: "rankings",
       },
       reverse: {
-        on: "ranking",
+        on: "rankings",
         has: "many",
         label: "roomRanked",
       },
@@ -55,13 +56,12 @@ const _schema = i.schema({
         label: "userRanking",
       },
       reverse: {
-        on: "ranking",
+        on: "rankings",
         has: "one",
         label: "user",
       },
     },
   },
-  rooms: {},
 });
 
 // This helps Typescript display nicer intellisense

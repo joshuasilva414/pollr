@@ -18,5 +18,6 @@ export type TierItem = {
 
 export type Tier = {
   name: string;
+  color: string;
   items: Array<TierItem>;
 };

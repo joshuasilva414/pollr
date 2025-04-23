@@ -8,8 +8,13 @@ import { z } from "zod";
 import { useState } from "react";
 import db from "@/lib/instant";
 import PersonalRanking from "./personal-ranking";
+import GroupRanking from "./group-ranking";
 export default function Page() {
   const { roomId } = useParams();
+
+  if (!roomId) {
+    return <div>No room ID</div>;
+  }
 
   const { isLoading, error, data } = db.useQuery({
     rooms: {
@@ -17,7 +22,7 @@ export default function Page() {
       $users: {},
       $: {
         where: {
-          id: roomId,
+          id: roomId as string,
         },
       },
     },
@@ -43,7 +48,7 @@ export default function Page() {
             <PersonalRanking tiers={tiers} items={items} />
           </TabsContent>
           <TabsContent value="group-ranking">
-            {/* <GroupRanking tiers={tiers} items={items} /> */}
+            <GroupRanking tiers={tiers} items={items} />
           </TabsContent>
         </Tabs>
       </div>

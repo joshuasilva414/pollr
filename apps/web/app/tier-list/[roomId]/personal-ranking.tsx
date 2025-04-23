@@ -3,37 +3,38 @@
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import Image from "next/image";
+import type { Tier, TierItem } from "@/lib/types";
 
 export default function PersonalRanking({
   tiers,
   items,
 }: {
   tiers: Tier[];
-  items: Item[];
+  items: TierItem[];
 }) {
   const { roomId } = useParams();
 
   // State to track items in each tier
-  const [tierItems, setTierItems] = useState<Record<TierName, string[]>>({
+  const [tierItems, setTierItems] = useState<Record<string, string[]>>({
     ...tiers?.reduce(
       (acc, tier) => {
-        acc[tier.name as TierName] = [];
+        acc[tier.name as string] = [];
         return acc;
       },
-      {} as Record<TierName, string[]>
+      {} as Record<string, string[]>
     ),
     unassigned: items?.map((item) => item.name) || [],
   });
 
   // Function to handle item drop into a tier
-  const handleDrop = (e: React.DragEvent, tierName: TierName) => {
+  const handleDrop = (e: React.DragEvent, tierName: string) => {
     e.preventDefault();
     const itemName = e.dataTransfer.getData("text/plain");
 
     // Find which tier currently has this item
-    let sourceTier: TierName = "unassigned";
+    let sourceTier: string = "unassigned";
     for (const [tier, tierItemList] of Object.entries(tierItems) as [
-      TierName,
+      string,
       string[],
     ][]) {
       if (tierItemList.includes(itemName)) {
@@ -49,10 +50,9 @@ export default function PersonalRanking({
     // and adding it to the target tier
     setTierItems((prev) => {
       const newState = { ...prev };
-      newState[sourceTier] = newState[sourceTier].filter(
-        (name) => name !== itemName
-      );
-      newState[tierName] = [...newState[tierName], itemName];
+      newState[sourceTier] =
+        newState[sourceTier]?.filter((name) => name !== itemName) || [];
+      newState[tierName] = [...(newState[tierName] || []), itemName];
       return newState;
     });
   };
@@ -78,12 +78,12 @@ export default function PersonalRanking({
             </div>
             <div
               className="col-span-7 min-h-16 flex flex-wrap gap-2 p-2"
-              onDrop={(e) => handleDrop(e, tier.name as TierName)}
+              onDrop={(e) => handleDrop(e, tier.name as string)}
               onDragOver={(e) => {
                 e.preventDefault();
               }}
             >
-              {tierItems[tier.name as TierName]?.map((itemName) => {
+              {tierItems[tier.name as string]?.map((itemName) => {
                 const item = getItemByName(itemName);
                 if (!item) return null;
 
@@ -114,7 +114,7 @@ export default function PersonalRanking({
       <div>
         <h2 className="py-6">Items</h2>
         <div className="grid grid-cols-8 gap-4">
-          {tierItems.unassigned.map((itemName) => {
+          {tierItems.unassigned?.map((itemName) => {
             const item = getItemByName(itemName);
             if (!item) return null;
 
