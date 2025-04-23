@@ -11,7 +11,7 @@ const _schema = i.schema({
     $users: i.entity({
       email: i.string().unique().indexed(),
     }),
-    rooms: i.entity({
+    lists: i.entity({
       code: i.string().unique().indexed(),
       name: i.string(),
       description: i.json(),
@@ -24,22 +24,30 @@ const _schema = i.schema({
       unranked: i.json(),
     }),
   },
+  rooms: {
+    tierList: {
+      presence: i.entity({
+        name: i.string(),
+        status: i.string(),
+      }),
+    },
+  },
   links: {
     userRoom: {
       forward: {
         on: "$users",
         has: "many",
-        label: "rooms",
+        label: "lists",
       },
       reverse: {
-        on: "rooms",
+        on: "lists",
         has: "many",
         label: "users",
       },
     },
     roomRanking: {
       forward: {
-        on: "rooms",
+        on: "lists",
         has: "many",
         label: "rankings",
       },

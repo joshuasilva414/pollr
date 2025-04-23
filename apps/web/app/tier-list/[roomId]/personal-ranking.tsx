@@ -1,18 +1,26 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import type { Tier, TierItem } from "@/lib/types";
+import db from "@/lib/instant";
 
 export default function PersonalRanking({
   tiers,
   items,
+  roomId,
 }: {
   tiers: Tier[];
   items: TierItem[];
+  roomId: string;
 }) {
-  const { roomId } = useParams();
+  const room = db.room("tierList", roomId);
+  const { user, peers, publishPresence } = db.rooms.usePresence(room);
+  // Publish your presence to the room
+  useEffect(() => {
+    publishPresence({ name: user?.peerId, status: "joined" });
+  }, []);
 
   // State to track items in each tier
   const [tierItems, setTierItems] = useState<Record<string, string[]>>({

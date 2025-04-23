@@ -10,7 +10,7 @@ export default db;
 
 export const createRoom = async (room: z.infer<typeof createRoomSchema>) => {
   const roomId = id();
-  await db.transact(db.tx.rooms![roomId]!.update({ ...room }));
+  await db.transact(db.tx.lists![roomId]!.update({ ...room }));
 
   return roomId;
 };
