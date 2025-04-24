@@ -4,13 +4,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import db from "@/lib/instant";
 import PersonalRanking from "./personal-ranking";
 import GroupRanking from "./group-ranking";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function Client({ roomId }: { roomId: string }) {
+  // Set a random user name for this client if not set
+  const [userName, setUserName] = useState(
+    `User-${Math.floor(Math.random() * 1000)}`
+  );
+
   const { isLoading, error, data } = db.useQuery({
     lists: {
-      $rankings: {},
-      $users: {},
+      rankings: {},
       $: {
         where: {
           id: roomId as string,
@@ -20,13 +24,18 @@ export default function Client({ roomId }: { roomId: string }) {
   });
   const tiers = data?.lists?.[0]?.tiers;
   const items = data?.lists?.[0]?.items;
+  console.log(tiers, items);
 
   const room = db.room("tierList", roomId);
-  const { user, peers, publishPresence } = db.rooms.usePresence(room);
-  // Publish your presence to the room
+  const { peers, publishPresence } = db.rooms.usePresence(room);
+
+  // Publish presence with the user name
   useEffect(() => {
-    publishPresence({ name: user?.name, status: "joined" });
-  }, []);
+    publishPresence({
+      name: userName,
+      status: "joined",
+    });
+  }, [userName, publishPresence]);
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
@@ -43,17 +52,21 @@ export default function Client({ roomId }: { roomId: string }) {
             <TabsTrigger value="group-ranking">Group Ranking</TabsTrigger>
           </TabsList>
           <TabsContent value="my-ranking">
-            <PersonalRanking tiers={tiers} items={items} roomId={roomId} />
+            <PersonalRanking
+              tiers={tiers}
+              items={items}
+              roomId={roomId}
+              userName={userName}
+              setUserName={setUserName}
+            />
           </TabsContent>
           <TabsContent value="group-ranking">
             <GroupRanking
               tiers={tiers}
               items={items}
               roomId={roomId}
-              peers={Object.values(peers).map((peer) => ({
-                name: peer.name,
-                peerId: peer.peerId,
-              }))}
+              peers={peers}
+              userName={userName}
             />
           </TabsContent>
         </Tabs>

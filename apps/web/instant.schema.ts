@@ -11,6 +11,9 @@ const _schema = i.schema({
     $users: i.entity({
       email: i.string().unique().indexed(),
     }),
+    userProfiles: i.entity({
+      displayName: i.string(),
+    }),
     lists: i.entity({
       code: i.string().unique().indexed(),
       name: i.string(),
@@ -33,9 +36,21 @@ const _schema = i.schema({
     },
   },
   links: {
+    // userProfile: {
+    //   forward: {
+    //     on: "$users",
+    //     has: "one",
+    //     label: "profile",
+    //   },
+    //   reverse: {
+    //     on: "userProfiles",
+    //     has: "one",
+    //     label: "user",
+    //   },
+    // },
     userRoom: {
       forward: {
-        on: "$users",
+        on: "userProfiles",
         has: "many",
         label: "lists",
       },
@@ -59,7 +74,7 @@ const _schema = i.schema({
     },
     userRanking: {
       forward: {
-        on: "$users",
+        on: "userProfiles",
         has: "many",
         label: "userRanking",
       },
