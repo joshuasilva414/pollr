@@ -44,6 +44,40 @@ export default function PersonalRanking({
     unassigned: items?.map((item) => item.name) || [],
   });
 
+  // Sync user rankings to database whenever tierItems state changes
+  useEffect(() => {
+    // Only sync if we have a valid userName and roomId
+    if (userName && roomId && tierItems) {
+      // Debounce the sync to avoid too many database calls
+      const timeoutId = setTimeout(async () => {
+        try {
+          // Generate a unique ID for this ranking based on userName
+          const rankingId = `${roomId}_${userName.replace(/\s+/g, "_")}`;
+
+          // Save the current ranking to the database
+          await db.transact([
+            db.tx.rankings![rankingId]!.update({
+              ranked: tierItems,
+              unranked: [],
+            }),
+            db.tx.lists![roomId]!.update({
+              rankings: {
+                [userName]: rankingId,
+              },
+            }),
+          ]);
+
+          console.log(`Rankings synced for user: ${userName}`);
+        } catch (error) {
+          console.error("Error syncing rankings:", error);
+        }
+      }, 500); // Debounce for 500ms
+
+      // Clean up timeout
+      return () => clearTimeout(timeoutId);
+    }
+  }, [tierItems, userName, roomId]);
+
   // State to track the currently selected item
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
 
