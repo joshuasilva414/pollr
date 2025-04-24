@@ -5,6 +5,7 @@ import { useEffect, useState, Dispatch, SetStateAction } from "react";
 import Image from "next/image";
 import type { Tier, TierItem } from "@/lib/types";
 import db from "@/lib/instant";
+import ItemCard from "@/components/item-card";
 
 export default function PersonalRanking({
   tiers,
@@ -114,20 +115,12 @@ export default function PersonalRanking({
                 if (!item) return null;
 
                 return (
-                  <div
-                    key={itemName}
-                    className="w-12 h-12"
-                    draggable
-                    onDragStart={(e) => {
-                      e.dataTransfer.setData("text/plain", itemName);
-                    }}
-                  >
-                    <Image
-                      width={100}
-                      height={100}
-                      src={item.image}
-                      alt={item.name}
-                      className="w-full h-full object-cover"
+                  <div key={itemName} className="w-12 h-12">
+                    <ItemCard
+                      item={item}
+                      onDragStart={(e) => {
+                        e.dataTransfer.setData("text/plain", itemName);
+                      }}
                     />
                   </div>
                 );
@@ -145,20 +138,12 @@ export default function PersonalRanking({
             if (!item) return null;
 
             return (
-              <div
-                key={item.name}
-                className="span-1 aspect-square"
-                draggable
-                onDragStart={(e) => {
-                  e.dataTransfer.setData("text/plain", item.name);
-                }}
-              >
-                <Image
-                  width={100}
-                  height={100}
-                  src={item.image}
-                  alt={item.name}
-                  className="w-full h-full object-cover"
+              <div key={item.name} className="span-1 aspect-square">
+                <ItemCard
+                  item={item}
+                  onDragStart={(e) => {
+                    e.dataTransfer.setData("text/plain", item.name);
+                  }}
                 />
               </div>
             );
