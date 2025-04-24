@@ -1,6 +1,7 @@
 import db from "@/lib/instant";
 import { useEffect, useState } from "react";
 import { Tier, TierItem } from "@/lib/types";
+import ItemCard from "@/components/item-card";
 
 export default function GroupRanking({
   tiers,
@@ -55,7 +56,7 @@ export default function GroupRanking({
   ];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <h3 className="text-lg font-medium">
         Connected Users ({allUsers.length}):
       </h3>
@@ -72,6 +73,14 @@ export default function GroupRanking({
             {user.name}
           </div>
         ))}
+      </div>
+
+      {/* Display group rankings here when implemented */}
+      <div className="mt-8">
+        <h3 className="text-lg font-medium mb-4">Group Rankings</h3>
+        <p className="text-sm text-muted-foreground">
+          Group rankings will be shown here based on everyone's selections.
+        </p>
       </div>
     </div>
   );

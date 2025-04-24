@@ -41,11 +41,16 @@ export default function Client({ roomId }: { roomId: string }) {
   if (error) return <div>Error: {error.message}</div>;
 
   return (
-    <div className="w-full pt-10">
-      <div className="w-full md:w-3/4 mx-4 md:mx-auto">
-        <h1 className="text-center w-full leading-16 text-2xl font-bold">
+    <div className="w-full pt-4 md:pt-10 px-2 md:px-0">
+      <div className="w-full md:w-3/4 mx-auto">
+        <h1 className="text-center w-full leading-16 text-xl md:text-2xl font-bold mb-4">
           Tier List
         </h1>
+        <div className="mb-3 p-3 bg-muted rounded-md text-sm">
+          <p className="font-medium">Mobile Instructions:</p>
+          <p>1. Tap an item to select it</p>
+          <p>2. Tap a tier to place the selected item</p>
+        </div>
         <Tabs defaultValue="my-ranking">
           <TabsList className="w-full justify-center">
             <TabsTrigger value="my-ranking">My Ranking</TabsTrigger>

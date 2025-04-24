@@ -4,15 +4,22 @@ import { TierItem } from "@/lib/types";
 export default function ItemCard({
   item,
   onDragStart,
+  onClick,
+  isSelected = false,
 }: {
   item: TierItem;
-  onDragStart: (e: React.DragEvent<HTMLDivElement>) => void;
+  onDragStart?: (e: React.DragEvent<HTMLDivElement>) => void;
+  onClick?: () => void;
+  isSelected?: boolean;
 }) {
   return (
     <div
-      className="aspect-square w-full flex flex-col items-center"
-      draggable
+      className={`aspect-square w-full flex flex-col items-center ${
+        isSelected ? "bg-primary/20 rounded-md" : ""
+      } ${onClick ? "cursor-pointer" : ""}`}
+      draggable={!!onDragStart}
       onDragStart={onDragStart}
+      onClick={onClick}
     >
       <div className="w-12 h-12">
         <Image
